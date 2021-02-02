@@ -22,7 +22,7 @@ async function job() {
     shell.cd(`${REPOS_STORE}/${repos[i].url}`);
     console.log(shell.ls());
 
-    // Reset HEAD If Needed
+    // Reset HEAD if needed
     shell.exec(`git reset --hard ${repos[i].hash}`);
     shell.exec(`git push -f origin ${SOURCE_BRANCH}`);
     console.log("Dev Reset");

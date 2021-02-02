@@ -26,6 +26,8 @@ const {
   GROUP_NAME,
   BASE_URL,
   BASE_EXT,
+  SOURCE_BRANCH,
+  TARGET_BRANCH,
 } = require("./backend-repos.js");
 
 module.exports = {
