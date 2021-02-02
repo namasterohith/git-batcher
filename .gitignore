@@ -1,5 +1,4 @@
 node_modules
-repositories
 .DS_Store
 src/config/backend-repos.js
 src/config/frontend-repos.js

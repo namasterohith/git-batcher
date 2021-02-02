@@ -2,6 +2,11 @@
 
 Utility scripts for running batch jobs for git
 
+## Available jobs
+
+- Clone.
+- Merge (with reset for optional source branch).
+
 ## Usage
 
 - Set configuration in `src/config/repos.js`.
