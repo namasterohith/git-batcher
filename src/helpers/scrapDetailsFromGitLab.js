@@ -10,6 +10,7 @@ function scrapGitLabRposDetails() {
     repos.push({
       name: repoLink.innerText,
       url: repoLink.href.split(`https://${PROVIDER}/${GROUP_NAME}/`)[1],
+      hash: "HEAD",
     });
   });
   return JSON.stringify(repos);

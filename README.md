@@ -1,6 +1,6 @@
 # Git Batcher
 
-Utility scripts for running batch jobs for git
+Node based utility scripts for running batch jobs for git.
 
 ## Available jobs
 
@@ -9,7 +9,16 @@ Utility scripts for running batch jobs for git
 
 ## Usage
 
+- Run `npm i` from the project root to intall all the dependencies.
 - Set configuration in `src/config/repos.js`.
-- Run `npm run clone` from the project root to create all cloned repositories.
-- Run `npm run merge` from the project root to perform merge/reset etc., on all cloned repositories.
+- Run `npm git-batcher clone` from the project root to create all cloned repositories.
+- Run `npm git-batcher merge` from the project root to perform merge/reset etc., on all cloned repositories.
+
+### Additional Helpers
+
 - Use `scrapGitLabRposDetails()` helper to scrap repository details from GitLab group page.
+
+## Requirements
+
+- Git
+- Node.js

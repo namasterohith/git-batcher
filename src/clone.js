@@ -1,5 +1,5 @@
 const repos = require("./config/repos.js");
-const fetchUrl = require("./fetch.js");
+const fetchUrl = require("./fetch-url.js");
 
 const shell = require("shelljs");
 
@@ -11,4 +11,4 @@ for (i in repos) {
   shell.exec("git clone " + fetchUrl(repos[i].url));
 }
 
-shell.exec(`cd ../`);
+shell.cd(`../`);

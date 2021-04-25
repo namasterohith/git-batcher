@@ -13,13 +13,9 @@
     "url": "https://github.com/namasterohith/git-batcher.git"
   },
   "license": "MIT",
-  "scripts": {
-    "clone": "node src/clone.js",
-    "merge": "node src/merge.js"
-  },
   "dependencies": {
-    "readline": "^1.3.0",
-    "shelljs": "^0.8.4"
+    "shelljs": "git+https://github.com/namasterohith/shelljs.git",
+    "make-runnable": "git+https://github.com/namasterohith/make-runnable.git"
   },
   "devDependencies": {}
 }
