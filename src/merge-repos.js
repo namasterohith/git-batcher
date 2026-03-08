@@ -1,4 +1,4 @@
-const { repos, SOURCE_BRANCH, TARGET_BRANCH } = require("./config/repos.js");
+const { repos, SOURCE_BRANCH, TARGET_BRANCH, DEFAULT_BRANCH_NAME } = require("./config/repos.js");
 const askQuestion = require("./ask-user.js");
 
 const shell = require("shelljs");
@@ -25,7 +25,7 @@ async function job() {
     // Reset HEAD if needed
     shell.exec(`git reset --hard ${repos[i].hash}`);
     shell.exec(`git push -f origin ${SOURCE_BRANCH}`);
-    console.log("Dev Reset");
+    console.log(DEFAULT_BRANCH_NAME + " Reset");
 
     shell.exec(`git fetch origin`);
     shell.exec(`git checkout -b beta origin/${TARGET_BRANCH}`);

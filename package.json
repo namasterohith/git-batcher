@@ -15,7 +15,8 @@
   "license": "MIT",
   "scripts": {
     "clone": "node src/clone.js",
-    "merge": "node src/merge.js"
+    "merge-repos": "node src/merge-repos.js",
+    "merge-branches": "node src/merge-branches.js"
   },
   "dependencies": {
     "readline": "^1.3.0",

@@ -5,6 +5,7 @@
 // const BASE_URL = `git@${PROVIDER}:${GROUP_NAME}/`;
 // const BASE_EXT = ".git";
 // const SOURCE_BRANCH = "dev";
+// const DEFAULT_BRANCH_NAME = "Dev";
 // const TARGET_BRANCH =
 // "beta";
 // //"production";
@@ -27,6 +28,7 @@ const {
   BASE_URL,
   BASE_EXT,
   SOURCE_BRANCH,
+  DEFAULT_BRANCH_NAME,
   TARGET_BRANCH,
 } = require("./backend-repos.js");
 
