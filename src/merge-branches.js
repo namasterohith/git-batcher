@@ -1,10 +1,6 @@
-const { SOURCE_BRANCH, targetBranches } = require("./config/branches.js");
 const askQuestion = require("./ask-user.js");
 const shell = require("shelljs");
-const path = require("path");
 
-// Run git commands from the parent repo root (git-batcher lives inside the CRM repo)
-shell.cd(path.resolve(__dirname, "../../"));
 shell.config.fatal = false;
 
 function run(cmd) {
@@ -13,9 +9,11 @@ function run(cmd) {
   return result;
 }
 
-async function mergeBranches() {
-  if (!targetBranches.length) {
-    console.log("No target branches configured. Edit src/config/branches.js");
+async function mergeBranches(config) {
+  const { SOURCE_BRANCH, targetBranches } = config;
+
+  if (!targetBranches || !targetBranches.length) {
+    console.log("No target branches configured in git-batcher.config.js");
     return;
   }
 
@@ -93,4 +91,4 @@ async function mergeBranches() {
   console.log("");
 }
 
-mergeBranches();
+module.exports = { mergeBranches };

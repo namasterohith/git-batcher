@@ -1,32 +1,40 @@
 # Git Batcher
 
-Utility scripts for running batch git operations.
+Utility scripts for running batch git operations across multiple repositories or branches.
 
-## Available Jobs
+## Installation
+
+Install globally:
+
+```bash
+npm install -g git-batcher
+```
+
+Or run via npx without installing:
+
+```bash
+npx git-batcher <command>
+```
+
+## Configuration
+
+`git-batcher` requires a configuration file named `git-batcher.config.js` in the directory where you run the command.
+
+To generate a default config file:
+
+```bash
+npx git-batcher init
+```
+
+## Available Commands
 
 | Command | Description |
-|---------|-------------|
-| `npm run clone` | Batch clone repositories from a git group |
-| `npm run merge-repos` | Batch merge with optional hard reset (for multi-repo release workflows) |
-| `npm run merge-branches` | Merge a source branch into all configured target branches (for white-label workflows) |
+| --------- | ------------- |
+| `npx git-batcher init` | Generate a `git-batcher.config.js` in the current directory |
+| `npx git-batcher clone` | Batch clone repositories defined in `config.repos` |
+| `npx git-batcher merge-repos` | Batch merge with optional hard reset (for multi-repo release workflows) using `config.reposConfig` |
+| `npx git-batcher merge-branches` | Merge a source branch into all configured target branches (for white-label workflows) using `config.branchesConfig` |
 
-## Usage
-
-### Clone Repositories
-
-1. Set configuration in `src/config/repos.js`.
-2. Run `npm run clone` to clone all repositories into `repositories/`.
-
-### Merge Repos (Multi-Repo Workflow)
-
-1. Set configuration in `src/config/repos.js`.
-2. Run `npm run merge-repos` to perform merge/reset on all repositories.
-
-### Merge Branches (White-Label Workflow)
-
-1. Set configuration in `src/config/branches.js`.
-2. Run `npm run merge-branches` to perform merge on all branches.
-
-### Helpers
+## Helpers
 
 - Use `scrapGitLabRposDetails()` in browser console to extract repository details from a GitLab group page.

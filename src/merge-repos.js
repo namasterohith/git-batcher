@@ -1,6 +1,4 @@
-const { repos, SOURCE_BRANCH, TARGET_BRANCH, DEFAULT_BRANCH_NAME } = require("./config/repos.js");
 const askQuestion = require("./ask-user.js");
-
 const shell = require("shelljs");
 
 const REPOS_STORE = "repositories";
@@ -15,13 +13,20 @@ async function merge(source, target) {
   console.log(`${target} Merged`);
 }
 
-async function job() {
-  console.log("Starting Batch Job!");
-  for (i in repos) {
-    console.log(repos[i]);
-    shell.cd(`${REPOS_STORE}/${repos[i].url}`);
-    console.log(shell.ls());
+async function mergeRepos(repos, config) {
+  const { SOURCE_BRANCH, TARGET_BRANCH, DEFAULT_BRANCH_NAME } = config;
 
+  console.log("\n=== Starting Merge Repos Job ===");
+  
+  if (!shell.test('-d', REPOS_STORE)) {
+    console.error(`❌ Repositories directory './${REPOS_STORE}' not found. Run 'clone' first.`);
+    return;
+  }
+
+  for (let i in repos) {
+    console.log(`\n--- Processing ${repos[i].url} ---`);
+    shell.cd(`${REPOS_STORE}/${repos[i].url}`);
+    
     // Reset HEAD if needed
     shell.exec(`git reset --hard ${repos[i].hash}`);
     shell.exec(`git push -f origin ${SOURCE_BRANCH}`);
@@ -36,7 +41,7 @@ async function job() {
     shell.exec(`git checkout ${SOURCE_BRANCH}`);
     shell.cd(`../../`);
   }
-  console.log("Finished Batch Job!");
+  console.log("\n✅ Finished Merge Repos Job!\n");
 }
 
-job();
+module.exports = { mergeRepos };
