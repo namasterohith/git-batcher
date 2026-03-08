@@ -24,7 +24,7 @@ Options:
   -c, --config      Path to a custom configuration file (default: ./git-batcher.config.js)
 `;
 
-const DEFAULT_CONFIG_CONTENT = `module.exports = {
+const DEFAULT_CONFIG_CONTENT_CJS = `module.exports = {
   // Config for 'clone' and 'merge-repos' commands
   repos: [
     // { url: "group/repo-name", hash: "commit-hash-to-reset-to" }
@@ -47,7 +47,30 @@ const DEFAULT_CONFIG_CONTENT = `module.exports = {
 };
 `;
 
-function loadConfig(configPath) {
+const DEFAULT_CONFIG_CONTENT_ESM = `export default {
+  // Config for 'clone' and 'merge-repos' commands
+  repos: [
+    // { url: "group/repo-name", hash: "commit-hash-to-reset-to" }
+  ],
+  reposConfig: {
+    // BASE_URL: "https://gitlab.com/",
+    // BASE_EXT: ".git",
+    SOURCE_BRANCH: "release",
+    TARGET_BRANCH: "main",
+    DEFAULT_BRANCH_NAME: "main"
+  },
+
+  // Config for 'merge-branches' command
+  branchesConfig: {
+    SOURCE_BRANCH: "main",
+    targetBranches: [
+      // { name: "Client A", branch: "client/client-a" },
+    ]
+  }
+};
+`;
+
+async function loadConfig(configPath) {
   if (!fs.existsSync(configPath)) {
     console.error(`\n❌ Configuration file not found at:\n   ${configPath}\n`);
     console.log(`Run 'npx git-batcher init' to create a default configuration file.\n`);
@@ -55,10 +78,20 @@ function loadConfig(configPath) {
   }
 
   try {
-    return require(configPath);
+    const fileUrl = require('url').pathToFileURL(configPath).href;
+    const config = await import(fileUrl);
+    return config.default || config;
   } catch (err) {
-    console.error(`\n❌ Error loading configuration file:\n   ${err.message}\n`);
-    process.exit(1);
+    if (err.message && err.message.includes('module is not defined')) {
+      console.error(`\n❌ Error loading configuration file:\n   The file is treated as an ES module due to package.json, but uses CommonJS syntax.\n   Please change 'module.exports =' to 'export default' in ${configPath}\n`);
+      process.exit(1);
+    }
+    try {
+      return require(configPath);
+    } catch (fallbackErr) {
+      console.error(`\n❌ Error loading configuration file:\n   ${err.message}\n`);
+      process.exit(1);
+    }
   }
 }
 
@@ -87,14 +120,23 @@ async function run() {
       if (fs.existsSync(configPath)) {
         console.log(`\n⚠️  Configuration file already exists at:\n   ${configPath}\n`);
       } else {
-        fs.writeFileSync(configPath, DEFAULT_CONFIG_CONTENT);
+        let isESM = false;
+        try {
+          const pkgPath = path.resolve(process.cwd(), 'package.json');
+          if (fs.existsSync(pkgPath)) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            if (pkg.type === 'module') isESM = true;
+          }
+        } catch (e) {}
+        
+        fs.writeFileSync(configPath, isESM ? DEFAULT_CONFIG_CONTENT_ESM : DEFAULT_CONFIG_CONTENT_CJS);
         console.log(`\n✅ Created default configuration file at:\n   ${configPath}\n`);
       }
       break;
     }
     
     case 'clone': {
-      const config = loadConfig(configPath);
+      const config = await loadConfig(configPath);
       if (!config.repos || config.repos.length === 0) {
         console.error('❌ "repos" array is empty or missing in git-batcher.config.js');
         process.exit(1);
@@ -104,7 +146,7 @@ async function run() {
     }
 
     case 'merge-repos': {
-      const config = loadConfig(configPath);
+      const config = await loadConfig(configPath);
       if (!config.repos || config.repos.length === 0) {
         console.error('❌ "repos" array is empty or missing in git-batcher.config.js');
         process.exit(1);
@@ -118,7 +160,7 @@ async function run() {
     }
 
     case 'merge-branches': {
-      const config = loadConfig(configPath);
+      const config = await loadConfig(configPath);
       if (!config.branchesConfig || !config.branchesConfig.targetBranches) {
         console.error('❌ "branchesConfig.targetBranches" array is missing in git-batcher.config.js');
         process.exit(1);
