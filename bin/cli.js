@@ -11,14 +11,17 @@ const HELP_TEXT = `
 Git Batcher
 
 Usage:
-  npx git-batcher <command>
+  npx git-batcher <command> [options]
 
 Commands:
   clone             Batch clone repositories from config
   merge-repos       Batch merge with hard reset for multi-repo workflows
   merge-branches    Merge a source branch into all configured target branches
-  init              Create a default git-batcher.config.js file in current directory
+  init              Create a custom or default config file if it doesn't exist
   help              Show this help message
+
+Options:
+  -c, --config      Path to a custom configuration file (default: ./git-batcher.config.js)
 `;
 
 const DEFAULT_CONFIG_CONTENT = `module.exports = {
@@ -44,8 +47,7 @@ const DEFAULT_CONFIG_CONTENT = `module.exports = {
 };
 `;
 
-function loadConfig() {
-  const configPath = path.resolve(process.cwd(), 'git-batcher.config.js');
+function loadConfig(configPath) {
   if (!fs.existsSync(configPath)) {
     console.error(`\n❌ Configuration file not found at:\n   ${configPath}\n`);
     console.log(`Run 'npx git-batcher init' to create a default configuration file.\n`);
@@ -62,11 +64,26 @@ function loadConfig() {
 
 async function run() {
   const args = process.argv.slice(2);
-  const command = args[0];
+  let configPath = path.resolve(process.cwd(), 'git-batcher.config.js');
+  let command = null;
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--config' || arg === '-c') {
+      if (i + 1 < args.length) {
+        configPath = path.resolve(process.cwd(), args[i + 1]);
+        i++;
+      } else {
+        console.error('❌ Missing value for --config option');
+        process.exit(1);
+      }
+    } else if (!command) {
+      command = arg;
+    }
+  }
 
   switch (command) {
     case 'init': {
-      const configPath = path.resolve(process.cwd(), 'git-batcher.config.js');
       if (fs.existsSync(configPath)) {
         console.log(`\n⚠️  Configuration file already exists at:\n   ${configPath}\n`);
       } else {
@@ -77,7 +94,7 @@ async function run() {
     }
     
     case 'clone': {
-      const config = loadConfig();
+      const config = loadConfig(configPath);
       if (!config.repos || config.repos.length === 0) {
         console.error('❌ "repos" array is empty or missing in git-batcher.config.js');
         process.exit(1);
@@ -87,7 +104,7 @@ async function run() {
     }
 
     case 'merge-repos': {
-      const config = loadConfig();
+      const config = loadConfig(configPath);
       if (!config.repos || config.repos.length === 0) {
         console.error('❌ "repos" array is empty or missing in git-batcher.config.js');
         process.exit(1);
@@ -101,7 +118,7 @@ async function run() {
     }
 
     case 'merge-branches': {
-      const config = loadConfig();
+      const config = loadConfig(configPath);
       if (!config.branchesConfig || !config.branchesConfig.targetBranches) {
         console.error('❌ "branchesConfig.targetBranches" array is missing in git-batcher.config.js');
         process.exit(1);

@@ -18,12 +18,18 @@ npx git-batcher <command>
 
 ## Configuration
 
-`git-batcher` requires a configuration file named `git-batcher.config.js` in the directory where you run the command.
+`git-batcher` uses a configuration file (default: `git-batcher.config.js`) in the directory where you run the command.
 
 To generate a default config file:
 
 ```bash
 npx git-batcher init
+```
+
+You can pass a custom config file path to any command using the `-c` or `--config` flag:
+
+```bash
+npx git-batcher <command> -c path/to/custom.config.js
 ```
 
 ## Available Commands
