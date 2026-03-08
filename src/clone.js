@@ -1,9 +1,8 @@
-const fetchUrl = require("./fetch.js");
 const shell = require("shelljs");
 
 const REPOS_STORE = "repositories";
 
-function clone(repos) {
+function clone(repos, reposConfig = {}) {
   console.log(`\n=== Cloning Repositories ===`);
   
   if (!shell.test('-d', REPOS_STORE)) {
@@ -12,10 +11,16 @@ function clone(repos) {
   
   shell.cd(REPOS_STORE);
 
+  const { BASE_URL = 'https://gitlab.com/', BASE_EXT = '.git' } = reposConfig || {};
+
   for (let i in repos) {
-    const url = fetchUrl(repos[i].url);
-    console.log(`Cloning ${url}...`);
-    shell.exec("git clone " + url);
+    const repoPath = repos[i].url;
+    let url = repoPath;
+    if (!url.startsWith('http') && !url.startsWith('git@')) {
+      url = BASE_URL + url + BASE_EXT;
+    }
+    console.log(`Cloning ${url} into ${repoPath}...`);
+    shell.exec(`git clone ${url} ${repoPath}`);
   }
 
   shell.cd(`../`);

@@ -1,7 +1,8 @@
 // Chore Helper
 // Run this on GitLab Group Page to scrap details
 
-const { PROVIDER, GROUP_NAME } = require("./config/repos.js");
+const PROVIDER = "gitlab.com";
+const GROUP_NAME = "my-group";
 
 function scrapGitLabRposDetails() {
   let repos = [];

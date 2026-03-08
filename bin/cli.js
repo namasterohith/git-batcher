@@ -27,6 +27,8 @@ const DEFAULT_CONFIG_CONTENT = `module.exports = {
     // { url: "group/repo-name", hash: "commit-hash-to-reset-to" }
   ],
   reposConfig: {
+    // BASE_URL: "https://gitlab.com/",
+    // BASE_EXT: ".git",
     SOURCE_BRANCH: "release",
     TARGET_BRANCH: "main",
     DEFAULT_BRANCH_NAME: "main"
@@ -80,7 +82,7 @@ async function run() {
         console.error('❌ "repos" array is empty or missing in git-batcher.config.js');
         process.exit(1);
       }
-      clone(config.repos);
+      clone(config.repos, config.reposConfig);
       break;
     }
 
